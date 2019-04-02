@@ -11,9 +11,20 @@ import cv2
 import time
 from geometry_msgs.msg import Twist, Vector3, Pose
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import Image, CompressedImage
+from sensor_msgs.msg import Image, CompressedImage, LaserScan
+from std_msgs.msg import UInt8
 from cv_bridge import CvBridge, CvBridgeError
 import cormodule
+from math import pi
+
+batida=0
+#frontal=0
+v=0.1
+w =(pi/2)
+
+def bateu(dado):
+	global batida
+	batida = dado.data
 
 print("ta rodando o certo")
 bridge = CvBridge()
@@ -70,6 +81,7 @@ if __name__=="__main__":
 	rospy.init_node("cor")
 
 	topico_imagem = "/kamera"
+	recebe_Bumper = rospy.Subscriber("/bumper", UInt8, bateu)
 	
 	# Para renomear a *webcam*
 	# 
@@ -94,66 +106,173 @@ if __name__=="__main__":
 		while not rospy.is_shutdown():
 			vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 			
-			if (len(mediaV) != 0 and len(centroV) != 0 and len(mediaA) !=0  and len(centroA) !=0):
-				
-			#if areaA != 0 or areaV != 0:
-				#print("passei")
-				if areaV > areaA:
-					
-					if mediaV[0] < metade + sigma:
-						vel = Twist(Vector3(0.1,0,0), Vector3(0,0,-0.3))
-						#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
-						velocidade_saida.publish(vel)
-						rospy.sleep(1.0)
-						print("direitaa vermelho")
-					
-					elif mediaV[0] > metade + sigma:
-						vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0.3))
-						#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
-						velocidade_saida.publish(vel)
-						rospy.sleep(1.0)
-						print("esquerdaa vermelho")
-					
-					else:
-						vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0))
-						#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
-						velocidade_saida.publish(vel)
-						rospy.sleep(1.0)
-						print("em frente pro vermelho!")
-				
-				elif areaV < areaA:
-					
-					if mediaA[0] < metade + sigma:
-						vel = Twist(Vector3(-0.1,0,0), Vector3(0,0,-0.3))
-						#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
-						velocidade_saida.publish(vel)
-						rospy.sleep(1.0)
-						print("direitaa foge do azul")
-					
-					elif mediaA[0] > metade + sigma:
-						vel = Twist(Vector3(-0.1,0,0), Vector3(0,0,0.3))
-						#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
-						velocidade_saida.publish(vel)
-						rospy.sleep(1.0)
-						print("esquerdaa run do azul")
-					
-					else:
-						vel = Twist(Vector3(-0.1,0,0), Vector3(0,0,0))
-						#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
-						velocidade_saida.publish(vel)
-						rospy.sleep(1.0)
-						print("corre do azul berg!")
-				else:
+			if batida != 0:
+				if batida == 2:
+
 					vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 					velocidade_saida.publish(vel)
 					rospy.sleep(1.0)
-					print("ahead we go!")
-			#print("Média dos vermelhos: {0}, {1}".format(media[0], media[1]))
-			#print("Centro dos vermelhos: {0}, {1}".format(centro[0], centro[1]))
-			#vel = Twist(Vector3(0.2,0,0), Vector3(0,0,0))
-			#print("aqui")
-			velocidade_saida.publish(vel)
-			rospy.sleep(0.1)
+
+					vel = Twist(Vector3(-v,0,0), Vector3(0,0,0))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+					
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,w))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+					
+					vel = Twist(Vector3(v,0,0), Vector3(0,0,0))
+					velocidade_saida.publish(vel)
+					rospy.sleep(2.0)
+					
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,-w))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+
+					batida=0
+
+				elif batida == 1:
+
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+
+
+					vel = Twist(Vector3(-v,0,0), Vector3(0,0,0))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+					
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,-w))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+					
+					vel = Twist(Vector3(v,0,0), Vector3(0,0,0))
+					velocidade_saida.publish(vel)
+					rospy.sleep(2.0)
+					
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,w))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+
+					batida=0
+
+				elif batida == 3:
+
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+
+					vel = Twist(Vector3(v,0,0), Vector3(0,0,0))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+					
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,w))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+					
+					vel = Twist(Vector3(-v,0,0), Vector3(0,0,0))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+					
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,-w))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+
+					vel = Twist(Vector3(-v,0,0), Vector3(0,0,0))
+					velocidade_saida.publish(vel)
+					rospy.sleep(4.0)
+
+					batida=0
+
+				elif batida == 4:
+
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+
+					vel = Twist(Vector3(v,0,0), Vector3(0,0,0))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+					
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,-w))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+					
+					vel = Twist(Vector3(-v,0,0), Vector3(0,0,0))
+					velocidade_saida.publish(vel)
+					rospy.sleep(4.0)
+					
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,w))
+					velocidade_saida.publish(vel)
+					rospy.sleep(1.0)
+
+					vel = Twist(Vector3(-v,0,0), Vector3(0,0,0))
+					velocidade_saida.publish(vel)
+					rospy.sleep(4.0)
+
+					batida=0
+
+			else:
+				if (len(mediaV) != 0 and len(centroV) != 0 and len(mediaA) !=0  and len(centroA) !=0):
+					
+				#if areaA != 0 or areaV != 0:
+					#print("passei")
+					if areaV > areaA:
+						
+						if mediaV[0] < metade + sigma:
+							vel = Twist(Vector3(0.1,0,0), Vector3(0,0,-0.3))
+							#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+							velocidade_saida.publish(vel)
+							rospy.sleep(1.0)
+							print("direitaa vermelho")
+						
+						elif mediaV[0] > metade + sigma:
+							vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0.3))
+							#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+							velocidade_saida.publish(vel)
+							rospy.sleep(1.0)
+							print("esquerdaa vermelho")
+						
+						else:
+							vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0))
+							#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+							velocidade_saida.publish(vel)
+							rospy.sleep(1.0)
+							print("em frente pro vermelho!")
+					
+					elif areaV < areaA:
+						
+						if mediaA[0] < metade + sigma:
+							vel = Twist(Vector3(-0.1,0,0), Vector3(0,0,-0.3))
+							#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+							velocidade_saida.publish(vel)
+							rospy.sleep(1.0)
+							print("direitaa foge do azul")
+						
+						elif mediaA[0] > metade + sigma:
+							vel = Twist(Vector3(-0.1,0,0), Vector3(0,0,0.3))
+							#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+							velocidade_saida.publish(vel)
+							rospy.sleep(1.0)
+							print("esquerdaa run do azul")
+						
+						else:
+							vel = Twist(Vector3(-0.1,0,0), Vector3(0,0,0))
+							#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+							velocidade_saida.publish(vel)
+							rospy.sleep(1.0)
+							print("corre do azul berg!")
+					else:
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+						velocidade_saida.publish(vel)
+						rospy.sleep(1.0)
+						print("ahead we go!")
+				#print("Média dos vermelhos: {0}, {1}".format(media[0], media[1]))
+				#print("Centro dos vermelhos: {0}, {1}".format(centro[0], centro[1]))
+				#vel = Twist(Vector3(0.2,0,0), Vector3(0,0,0))
+				#print("aqui")
+				velocidade_saida.publish(vel)
+				rospy.sleep(0.1)
 
 	except rospy.ROSInterruptException:
 	    print("Ocorreu uma exceção com o rospy")
