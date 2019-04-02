@@ -15,7 +15,7 @@ from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
 import cormodule
 
-
+print("ta rodando o certo")
 bridge = CvBridge()
 
 cv_image = None
@@ -44,6 +44,8 @@ def roda_todo_frame(imagem):
 	global mediaV
 	global centroA
 	global centroV
+	global areaV
+	global areaA
 
 	now = rospy.get_rostime()
 	imgtime = imagem.header.stamp
@@ -60,6 +62,7 @@ def roda_todo_frame(imagem):
 		mediaA, centroA, areaA =  cormodule.identifica_cor_azul(cv_image)
 		depois = time.clock()
 		cv2.imshow("Camera", cv_image)
+
 	except CvBridgeError as e:
 		print('ex', e)
 	
@@ -98,22 +101,22 @@ if __name__=="__main__":
 				if areaV > areaA:
 					
 					if mediaV[0] < metade + sigma:
-						#vel = Twist(Vector3(0.1,0,0), Vector3(0,0,-0.3))
-						vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+						vel = Twist(Vector3(0.1,0,0), Vector3(0,0,-0.3))
+						#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 						velocidade_saida.publish(vel)
 						rospy.sleep(1.0)
 						print("direitaa vermelho")
 					
 					elif mediaV[0] > metade + sigma:
-						#vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0.3))
-						vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+						vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0.3))
+						#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 						velocidade_saida.publish(vel)
 						rospy.sleep(1.0)
 						print("esquerdaa vermelho")
 					
 					else:
-						#vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0))
-						vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+						vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0))
+						#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 						velocidade_saida.publish(vel)
 						rospy.sleep(1.0)
 						print("em frente pro vermelho!")
@@ -121,22 +124,22 @@ if __name__=="__main__":
 				elif areaV < areaA:
 					
 					if mediaA[0] < metade + sigma:
-						#vel = Twist(Vector3(-0.1,0,0), Vector3(0,0,-0.3))
-						vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+						vel = Twist(Vector3(-0.1,0,0), Vector3(0,0,-0.3))
+						#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 						velocidade_saida.publish(vel)
 						rospy.sleep(1.0)
 						print("direitaa foge do azul")
 					
 					elif mediaA[0] > metade + sigma:
-						#vel = Twist(Vector3(-0.1,0,0), Vector3(0,0,0.3))
-						vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+						vel = Twist(Vector3(-0.1,0,0), Vector3(0,0,0.3))
+						#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 						velocidade_saida.publish(vel)
 						rospy.sleep(1.0)
 						print("esquerdaa run do azul")
 					
 					else:
-						#vel = Twist(Vector3(-0.1,0,0), Vector3(0,0,0))
-						vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+						vel = Twist(Vector3(-0.1,0,0), Vector3(0,0,0))
+						#vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 						velocidade_saida.publish(vel)
 						rospy.sleep(1.0)
 						print("corre do azul berg!")
