@@ -14,6 +14,8 @@ from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
 import smach
 import smach_ros
+import auxiliar as aux
+
 
 
 def identifica_cor_vermelho(frame):
@@ -27,8 +29,9 @@ def identifica_cor_vermelho(frame):
 	# do vermelho:
 	frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-	cor_menor = np.array([0, 50, 50])
-	cor_maior = np.array([8, 255, 255])
+	#cor_menor = np.array([0, 50, 50])
+	#cor_maior = np.array([8, 255, 255])
+	cor_menor, cor_maior = aux.ranges('#FF0000')
 	segmentado_cor = cv2.inRange(frame_hsv, cor_menor, cor_maior)
 
 	# cor_menor = np.array([172, 50, 50])
