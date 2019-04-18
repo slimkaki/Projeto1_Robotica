@@ -3,7 +3,6 @@
 
 __author__ = ["Rachel P. B. Moraes", "Igor Montagner", "Fabio Miranda"]
 
-
 import rospy
 import numpy as np
 import math
@@ -19,7 +18,6 @@ from math import pi
 import tf
 import visao_module
 
-
 batida=0
 Scaner=[0]*360
 v=0.1
@@ -29,8 +27,8 @@ bridge = CvBridge()
 cv_image = None
 mediaA = []
 centroA = []
-atraso = 0.5E9 # 1 segundo e meio. Em nanossegundos
-areaV = 0.0 # Variavel com a area do maior contorno
+atraso = 0.5E9
+areaV = 0.0
 areaA = 0.0
 metade=320
 sigma=5
@@ -105,15 +103,6 @@ if __name__=="__main__":
 	# Para renomear a *webcam*
 	# 
 	# 	rosrun topic_tools relay  /cv_camera/image_raw/compressed /kamera
-	# 
-	# Para renomear a câmera simulada do Gazebo
-	# 
-	# 	rosrun topic_tools relay  /camera/rgb/image_raw/compressed /kamera
-	# 
-	# Para renomear a câmera da Raspberry
-	# 
-	# 	rosrun topic_tools relay /raspicam_node/image/compressed /kamera
-	# 
 
 	recebedor = rospy.Subscriber(topico_imagem, CompressedImage, roda_todo_frame, queue_size=4, buff_size = 2**24)
 	velocidade_saida = rospy.Publisher("/cmd_vel", Twist, queue_size = 1)
@@ -240,17 +229,10 @@ if __name__=="__main__":
 					continue
 
 			# DETECTOR DE PROXIMIDADE LASERSCAN - SURVIVAL
-			
-			#print("Scanner: "+str(Scaner))
 			Quad1=Scaner[0:90]
 			Quad2=Scaner[90:180]
 			Quad3=Scaner[180:270]
 			Quad4=Scaner[270:]
-			#split=np.split(Scaner,90)
-
-			#print(split)
-
-			#Quad1,Quad2,Quad3,Quad4=split[0],split[1],split[2],split[3]
 
 			if min(Scaner)<0.2:
 
@@ -275,19 +257,11 @@ if __name__=="__main__":
 					vel = Twist(Vector3(-v,0,0), Vector3(0,0,-w2))
 					velocidade_saida.publish(vel)
 					rospy.sleep(2.0)
-					
-					
-				# else:
-				# 	vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
-				# 	velocidade_saida.publish(vel)
-				# 	rospy.sleep(1.0)
 
 			# DETECTOR MOBILENET - Friendly
 			elif viu_dog:
 
 				if posicao != None:
-
-					#print(" a media da posicao do dog eh{0}".format(media_dog))
 
 					if media_dog<metade-sigma:
 						vel = Twist(Vector3(v,0,0), Vector3(0,0,-w2))
@@ -295,23 +269,20 @@ if __name__=="__main__":
 						rospy.sleep(0.8)
 						viu_dog=False
 						print("seguindo dog indo pra esquerda")
-						continue
-
+						
 					elif media_dog>metade+sigma:
 						vel = Twist(Vector3(v,0,0), Vector3(0,0,w2))
 						velocidade_saida.publish(vel)
 						rospy.sleep(0.8)
 						viu_dog = False
 						print("seguindo dog indo pra direita")
-						continue
-
+						
 					else:
 						vel = Twist(Vector3(v,0,0), Vector3(0,0,0))
 						velocidade_saida.publish(vel)
 						rospy.sleep(1)
 						viu_dog = False
 						print("seguindo dog")
-						continue
 
 			# DETECTOR DE COR - Friendly
 
@@ -330,6 +301,7 @@ if __name__=="__main__":
 					rospy.sleep(1.0)
 					print("fugindo do azul desviando para esquerda")
 					continue
+
 				else:
 					vel = Twist(Vector3(-v,0,0), Vector3(0,0,0))
 					velocidade_saida.publish(vel)
@@ -343,7 +315,6 @@ if __name__=="__main__":
 				rospy.sleep(0.1)
 				print("Procurando a acao")
 				continue
+
 	except rospy.ROSInterruptException:
 	    print("Ocorreu uma exceção com o rospy")
-
-
